@@ -4,6 +4,7 @@ BEGIN
 {
   baseline = timestamp;
   scale = 1000000;
+  printf("%-10s , %-10s, %-8s , %-8s , %-8s, %-8s , %-8s, %-15s, %-15s\n","DELTA","TIMESTAMP","TID","CURR CPU","CURR GROUP","LAST CPU","LAST GROUP","TYPE","DESCRIPTION" );
 }
 sched:::on-cpu
 /pid == $target && !self->stamp /
@@ -12,10 +13,11 @@ sched:::on-cpu
   self->lastcpu = curcpu->cpu_id;
   self->lastlgrp = curcpu->cpu_lgrp;
   self->stamp = (timestamp - baseline) / scale;
-  printf("%9d:%-9d TID %3d CPU %3d(%d) created\n",
-      self->stamp, 0, tid, curcpu->cpu_id, curcpu->cpu_lgrp);
-  /*ustack(); */
+  printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
+      self->stamp,      0,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, -1, -1, "CREATE", ""
+      );
 }
+
 sched:::on-cpu
 /pid == $target && self->stamp && self->lastcpu\
       != curcpu->cpu_id/
@@ -23,13 +25,15 @@ sched:::on-cpu
   self->delta = (timestamp - self->stamp) / scale;
   self->stamp = timestamp;
   self->stamp = (timestamp - baseline) / scale;
-  printf("%9d:%-9d TID %3d  from-CPU %d(%d) ",self->stamp,
-      self->delta, tid, self->lastcpu, self->lastlgrp);
-  printf("to-cpu %d(%d) CPU migration\n",
-      curcpu->cpu_id, curcpu->cpu_lgrp);
+
+  printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
+      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, self->lastcpu, self->lastgrp, "CPU MIGRATION", ""
+      );
+
   self->lastcpu =curcpu->cpu_id;
   self->latgrp = curcpu->cpu_lgrp;
 }
+
 sched:::on-cpu
 /pid == $target && self->stamp && self->lastcpu\
       == curcpu->cpu_id/
@@ -37,20 +41,25 @@ sched:::on-cpu
   self->delta = (timestamp - self->stamp) / scale;
   self->stamp = timestamp; 
   self->stamp = (timestamp - baseline) / scale;
-  printf("%9d:%-9d TID %3d CPU %3d(%d) ",self->stamp,
-      self->delta, tid, curcpu->cpu_id, curcpu->cpu_lgrp);
-  printf("restarted on the same CPU\n");
+
+  printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
+      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, -1, -1, "RSTRT SAME CPU", ""
+      );
+
 }
+
 sched:::off-cpu
 /pid == $target && self->stamp /
 {
   self->delta = (timestamp - self->stamp) / scale;
   self->stamp = timestamp; 
   self->stamp = (timestamp - baseline) / scale;
-  printf("%9d:%-9d TID %3d CPU %3d(%d) preempted\n",
-      self->stamp, self->delta, tid, curcpu->cpu_id,
-      curcpu->cpu_lgrp);
+
+  printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
+      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, -1, -1, "PREEMPTED", ""
+      );
 }
+
 sched:::sleep
 /pid == $target /
 {
@@ -65,19 +74,10 @@ sched:::sleep
   self->delta = (timestamp - self->stamp) /scale;
   self->stamp = timestamp; 
   self->stamp = (timestamp - baseline) / scale;
-  printf("%9d:%-9d TID %3d sleeping on '%s'\n",
-      self->stamp, self->delta, tid, self->sobj);
-  /* @sleep[curlwpsinfo->pr_stype, curlwpsinfo->pr_state, ustack()]=count(); */
-}
-sched:::sleep
-/ pid == $target && ( curlwpsinfo->pr_stype == SOBJ_CV ||
-    curlwpsinfo->pr_stype == SOBJ_USER ||
-    curlwpsinfo->pr_stype == SOBJ_USER_PI) /
-{
-  /*ustack()*/
-}
-sched:::sleep
-/pid!=$pid && 0/
-{
-  @sleep[execname,curlwpsinfo->pr_stype, curlwpsinfo->pr_state, ustack()]=count(); 
+
+
+  printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
+      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, self->lastcpu, self->lastgrp, "SLEEPING ON", self->sobj
+      );
+
 }
