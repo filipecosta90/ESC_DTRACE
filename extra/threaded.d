@@ -3,18 +3,25 @@
 BEGIN
 {
   baseline = timestamp;
-  scale = 1000000;
-  printf("%-10s , %-10s, %-8s , %-8s , %-8s, %-8s , %-8s, %-15s, %-15s\n","DELTA","TIMESTAMP","TID","CURR CPU","CURR GROUP","LAST CPU","LAST GROUP","TYPE","DESCRIPTION" );
+  printf("%-20s , %-20s, %-8s , %-8s , %-8s, %-8s , %-8s, %-25s, %-15s\n",
+      "TIMESTAMP","TIMESTAMP","TID","CURR CPU","CURR GRP","LAST CPU","LAST GRP","TYPE","DESCRIPTION" 
+      );
 }
 sched:::on-cpu
 /pid == $target && !self->stamp /
 {
-  self->stamp = timestamp; 
   self->lastcpu = curcpu->cpu_id;
   self->lastlgrp = curcpu->cpu_lgrp;
-  self->stamp = (timestamp - baseline) / scale;
-  printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
-      self->stamp,      0,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, -1, -1, "CREATE", ""
+  self->stamp = timestamp - baseline;
+  self->delta = 0;
+
+  printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
+      self->stamp, self->delta,
+      tid, 
+      curcpu->cpu_id,
+      curcpu->cpu_lgrp,
+      self->lastcpu, self->lastlgrp,
+      "CREATE", ""
       );
 }
 
@@ -22,12 +29,16 @@ sched:::on-cpu
 /pid == $target && self->stamp && self->lastcpu\
       != curcpu->cpu_id/
 {
-  self->delta = (timestamp - self->stamp) / scale;
-  self->stamp = timestamp;
-  self->stamp = (timestamp - baseline) / scale;
+  self->delta = timestamp - self->stamp;
+  self->stamp = timestamp - baseline;
 
-  printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
-      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, self->lastcpu, self->lastlgrp, "CPU MIGRATION", ""
+  printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
+      self->stamp, self->delta,
+      tid, 
+      curcpu->cpu_id,
+      curcpu->cpu_lgrp,
+      self->lastcpu, self->lastlgrp,
+      "CPU MIGRATION", ""
       );
 
   self->lastcpu =curcpu->cpu_id;
@@ -38,12 +49,16 @@ sched:::on-cpu
 /pid == $target && self->stamp && self->lastcpu\
       == curcpu->cpu_id/
 {
-  self->delta = (timestamp - self->stamp) / scale;
-  self->stamp = timestamp; 
-  self->stamp = (timestamp - baseline) / scale;
+  self->delta = timestamp - self->stamp;
+  self->stamp = timestamp - baseline;
 
-  printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
-      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, -1, -1, "RSTRT SAME CPU", ""
+  printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
+      self->stamp, self->delta,
+      tid, 
+      curcpu->cpu_id,
+      curcpu->cpu_lgrp,
+      self->lastcpu, self->lastlgrp,
+      "RESTART ON SAME CPU", ""
       );
 
 }
@@ -51,13 +66,18 @@ sched:::on-cpu
 sched:::off-cpu
 /pid == $target && self->stamp /
 {
-  self->delta = (timestamp - self->stamp) / scale;
-  self->stamp = timestamp; 
-  self->stamp = (timestamp - baseline) / scale;
+  self->delta = timestamp - self->stamp;
+  self->stamp = timestamp - baseline;
 
-  printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
-      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, -1, -1, "PREEMPTED", ""
+  printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
+      self->stamp, self->delta,
+      tid, 
+      curcpu->cpu_id,
+      curcpu->cpu_lgrp,
+      self->lastcpu, self->lastlgrp,
+      "PREEMPTED", ""
       );
+
 }
 
 sched:::sleep
@@ -71,13 +91,17 @@ sched:::sleep
       "user-level lock" : curlwpsinfo->pr_stype == SOBJ_USER_PI ?
       "user-level PI lock" : curlwpsinfo->pr_stype == SOBJ_SHUTTLE ?
       "shuttle" : "unknown");
-  self->delta = (timestamp - self->stamp) /scale;
-  self->stamp = timestamp; 
-  self->stamp = (timestamp - baseline) / scale;
 
+  self->delta = timestamp - self->stamp;
+  self->stamp = timestamp - baseline;
 
-  printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
-      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, -1, -1, "SLEEPING ON", self->sobj
+  printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
+      self->stamp, self->delta,
+      tid, 
+      curcpu->cpu_id,
+      curcpu->cpu_lgrp,
+      self->lastcpu, self->lastlgrp,
+      "SLEEPING ON", self->sobj
       );
 
 }
