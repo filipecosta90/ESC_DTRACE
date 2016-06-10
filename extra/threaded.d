@@ -27,11 +27,11 @@ sched:::on-cpu
   self->stamp = (timestamp - baseline) / scale;
 
   printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
-      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, self->lastcpu, self->lastgrp, "CPU MIGRATION", ""
+      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, self->lastcpu, self->lastlgrp, "CPU MIGRATION", ""
       );
 
   self->lastcpu =curcpu->cpu_id;
-  self->latgrp = curcpu->cpu_lgrp;
+  self->lastlgrp = curcpu->cpu_lgrp;
 }
 
 sched:::on-cpu
