@@ -2,16 +2,16 @@
 #pragma D option quiet
 BEGIN
 {
-  baseline = walltimestamp;
+  baseline = timestamp;
   scale = 1000000;
 }
 sched:::on-cpu
 /pid == $target && !self->stamp /
 {
-  self->stamp = walltimestamp; 
+  self->stamp = timestamp; 
   self->lastcpu = curcpu->cpu_id;
   self->lastlgrp = curcpu->cpu_lgrp;
-  self->stamp = (walltimestamp - baseline) / scale;
+  self->stamp = (timestamp - baseline) / scale;
   printf("%9d:%-9d TID %3d CPU %3d(%d) created\n",
       self->stamp, 0, tid, curcpu->cpu_id, curcpu->cpu_lgrp);
   /*ustack(); */
@@ -20,9 +20,9 @@ sched:::on-cpu
 /pid == $target && self->stamp && self->lastcpu\
       != curcpu->cpu_id/
 {
-  self->delta = (walltimestamp - self->stamp) / scale;
-  self->stamp = walltimestamp;
-  self->stamp = (walltimestamp - baseline) / scale;
+  self->delta = (timestamp - self->stamp) / scale;
+  self->stamp = timestamp;
+  self->stamp = (timestamp - baseline) / scale;
   printf("%9d:%-9d TID %3d  from-CPU %d(%d) ",self->stamp,
       self->delta, tid, self->lastcpu, self->lastlgrp);
   printf("to-cpu %d(%d) CPU migration\n",
@@ -34,9 +34,9 @@ sched:::on-cpu
 /pid == $target && self->stamp && self->lastcpu\
       == curcpu->cpu_id/
 {
-  self->delta = (walltimestamp - self->stamp) / scale;
-  self->stamp = walltimestamp; 
-  self->stamp = (walltimestamp - baseline) / scale;
+  self->delta = (timestamp - self->stamp) / scale;
+  self->stamp = timestamp; 
+  self->stamp = (timestamp - baseline) / scale;
   printf("%9d:%-9d TID %3d CPU %3d(%d) ",self->stamp,
       self->delta, tid, curcpu->cpu_id, curcpu->cpu_lgrp);
   printf("restarted on the same CPU\n");
@@ -44,9 +44,9 @@ sched:::on-cpu
 sched:::off-cpu
 /pid == $target && self->stamp /
 {
-  self->delta = (walltimestamp - self->stamp) / scale;
-  self->stamp = walltimestamp; 
-  self->stamp = (walltimestamp - baseline) / scale;
+  self->delta = (timestamp - self->stamp) / scale;
+  self->stamp = timestamp; 
+  self->stamp = (timestamp - baseline) / scale;
   printf("%9d:%-9d TID %3d CPU %3d(%d) preempted\n",
       self->stamp, self->delta, tid, curcpu->cpu_id,
       curcpu->cpu_lgrp);
@@ -62,9 +62,9 @@ sched:::sleep
       "user-level lock" : curlwpsinfo->pr_stype == SOBJ_USER_PI ?
       "user-level PI lock" : curlwpsinfo->pr_stype == SOBJ_SHUTTLE ?
       "shuttle" : "unknown");
-  self->delta = (walltimestamp - self->stamp) /scale;
-  self->stamp = walltimestamp; 
-  self->stamp = (walltimestamp - baseline) / scale;
+  self->delta = (timestamp - self->stamp) /scale;
+  self->stamp = timestamp; 
+  self->stamp = (timestamp - baseline) / scale;
   printf("%9d:%-9d TID %3d sleeping on '%s'\n",
       self->stamp, self->delta, tid, self->sobj);
   /* @sleep[curlwpsinfo->pr_stype, curlwpsinfo->pr_state, ustack()]=count(); */

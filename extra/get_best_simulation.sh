@@ -30,3 +30,13 @@ cd ..
 cd __best_simulation
 
 gawk -F, '{ print $2 }' *.csv > "../simulation_list.txt"
+
+cd ..
+
+
+while read f; do
+  echo $f
+  cp "__csv/"$f "__best_simulation_csv/"$f
+done <simulation_list.txt
+
+
