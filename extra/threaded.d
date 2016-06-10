@@ -77,7 +77,7 @@ sched:::sleep
 
 
   printf("%-10d , %-10d, %-8d , %-8d , %-8d, %-8d , %-8d, %-15s, %-15s\n",
-      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, self->lastcpu, self->lastgrp, "SLEEPING ON", self->sobj
+      self->stamp, self->delta,   tid, curcpu->cpu_id, curcpu->cpu_lgrp, -1, -1, "SLEEPING ON", self->sobj
       );
 
 }
