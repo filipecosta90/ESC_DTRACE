@@ -2,7 +2,7 @@
 #pragma D option quiet
 BEGIN
 {
-    scale = 1000;
+  scale = 1000;
   baseline = timestamp;
   printf("%-20s , %-20s, %-8s , %-8s , %-8s, %-8s , %-8s, %-25s, %-15s\n",
       "TIMESTAMP (us)","DELTA (us)","TID","CURR CPU","CURR GRP","LAST CPU","LAST GRP","TYPE","DESCRIPTION"
@@ -112,10 +112,26 @@ sched:::sleep
 
 }
 
+proc:::lwp-exit                                                                 
+/pid == $target /
+{                                                                               
+  self->delta = (timestamp-baseline) - self->stamp;
+  self->stamp = timestamp - baseline;
+
+  printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
+      self->stamp / scale, self->delta / scale,
+      tid, 
+      curcpu->cpu_id,
+      curcpu->cpu_lgrp,
+      self->lastcpu, self->lastlgrp,
+      "EXIT", "" 
+      );
+} 
+
 END {
   self->stamp = timestamp - baseline;
   self->delta = timestamp - baseline;
   printf("%-20d , %-20s, %-8s , %-8s , %-8s, %-8s , %-8s, %-25s, %-15s", 
-       self->stamp / scale, "" , "" , "" ,  ""  ,  ""  ,  "" ,  "END"  ,  ""    
+      self->stamp / scale, "" , "" , "" ,  ""  ,  ""  ,  "" ,  "END"  ,  ""    
       );
 }
