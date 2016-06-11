@@ -7,8 +7,13 @@ BEGIN
   printf("%-20s , %-20s, %-8s , %-8s , %-8s, %-8s , %-8s, %-25s, %-15s\n",
       "TIMESTAMP (us)","DELTA (us)","TID","CURR CPU","CURR GRP","LAST CPU","LAST GRP","TYPE","DESCRIPTION"
       );
-  printf("%-20d , %-20s, %-8s , %-8s , %-8s, %-8s , %-8s, %-25s, %-15s\n", 
-      0 , "", "" , "" ,  ""  ,  ""  ,  "" ,  "BEGIN"  ,  ""    
+
+  printf("%-20d , %-20s, %-8d , %-8d , %-8d, %-8s , %-8s, %-25s, %-15s\n", 
+      0 , "", 
+      tid, 
+      curcpu->cpu_id,
+      curcpu->cpu_lgrp,
+      ""  ,  "" ,  "BEGIN"  ,  ""    
       );
 
 
@@ -32,9 +37,8 @@ sched:::on-cpu
 }
 
 sched:::dequeue
-/pid == $targe && 
-args[2]->cpu_id != --1 && 
-cpu != args[2]->cpu_id &&
+/pid == $target 
+  && cpu != args[2]->cpu_id &&
 (curlwpsinfo->pr_flag & PR_IDLE)/
 {
   self->delta = (timestamp-baseline) - self->stamp;
@@ -150,7 +154,12 @@ proc:::lwp-exit
 END {
   self->stamp = timestamp - baseline;
   self->delta = timestamp - baseline;
-  printf("%-20d , %-20s, %-8s , %-8s , %-8s, %-8s , %-8s, %-25s, %-15s", 
-      self->stamp / scale, "" , "" , "" ,  ""  ,  ""  ,  "" ,  "END"  ,  ""    
+  printf("%-20d , %-20s, %-8d , %-8d , %-8d, %-8s , %-8s, %-25s, %-15s", 
+      self->stamp / scale, "" , 
+      tid, 
+      curcpu->cpu_id,
+      curcpu->cpu_lgrp,
+      ""  ,  "" ,  
+      "END"  ,  ""    
       );
 }

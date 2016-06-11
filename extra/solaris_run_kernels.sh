@@ -1,6 +1,6 @@
 #!bin/bash
 
-rm __csv/*.csv
+rm -r __csv
 
 for schedule in static dynamic guided
 do
