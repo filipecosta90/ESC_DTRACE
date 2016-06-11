@@ -33,10 +33,9 @@ gawk -F, '{ print $2 }' *.csv > "../simulation_list.txt"
 
 cd ..
 
-
 while read f; do
   echo $f
   cp "__csv/"$f "__best_simulation_csv/"$f
+( head -n 1 $f && sed 1d $f | grep -v "Time:" | grep -v "Threads" | sort -n ) > "sorted_"$f
 done <simulation_list.txt
-
 

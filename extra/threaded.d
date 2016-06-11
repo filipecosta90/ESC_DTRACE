@@ -2,10 +2,16 @@
 #pragma D option quiet
 BEGIN
 {
+    scale = 1000;
   baseline = timestamp;
   printf("%-20s , %-20s, %-8s , %-8s , %-8s, %-8s , %-8s, %-25s, %-15s\n",
-      "TIMESTAMP","TIMESTAMP","TID","CURR CPU","CURR GRP","LAST CPU","LAST GRP","TYPE","DESCRIPTION" 
+      "TIMESTAMP (us)","DELTA (us)","TID","CURR CPU","CURR GRP","LAST CPU","LAST GRP","TYPE","DESCRIPTION"
       );
+  printf("%-20d , %-20s, %-8s , %-8s , %-8s, %-8s , %-8s, %-25s, %-15s\n", 
+      0 , "", "" , "" ,  ""  ,  ""  ,  "" ,  "BEGIN"  ,  ""    
+      );
+
+
 }
 sched:::on-cpu
 /pid == $target && !self->stamp /
@@ -13,10 +19,10 @@ sched:::on-cpu
   self->lastcpu = curcpu->cpu_id;
   self->lastlgrp = curcpu->cpu_lgrp;
   self->stamp = timestamp - baseline;
-  self->delta = 0;
+  self->delta = timestamp - baseline;
 
   printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
-      self->stamp, self->delta,
+      self->stamp / scale, self->delta / scale,
       tid, 
       curcpu->cpu_id,
       curcpu->cpu_lgrp,
@@ -29,11 +35,11 @@ sched:::on-cpu
 /pid == $target && self->stamp && self->lastcpu\
       != curcpu->cpu_id/
 {
-  self->delta = timestamp - self->stamp;
+  self->delta = (timestamp-baseline) - self->stamp;
   self->stamp = timestamp - baseline;
 
   printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
-      self->stamp, self->delta,
+      self->stamp / scale, self->delta / scale,
       tid, 
       curcpu->cpu_id,
       curcpu->cpu_lgrp,
@@ -49,11 +55,11 @@ sched:::on-cpu
 /pid == $target && self->stamp && self->lastcpu\
       == curcpu->cpu_id/
 {
-  self->delta = timestamp - self->stamp;
+  self->delta = (timestamp -baseline)- self->stamp;
   self->stamp = timestamp - baseline;
 
   printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
-      self->stamp, self->delta,
+      self->stamp / scale, self->delta / scale,
       tid, 
       curcpu->cpu_id,
       curcpu->cpu_lgrp,
@@ -66,11 +72,11 @@ sched:::on-cpu
 sched:::off-cpu
 /pid == $target && self->stamp /
 {
-  self->delta = timestamp - self->stamp;
-  self->stamp = timestamp - baseline;
+  self->delta = (timestamp - baseline)- self->stamp;
+  self->stamp = ( timestamp - baseline );
 
   printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
-      self->stamp, self->delta,
+      self->stamp / scale, self->delta / scale,
       tid, 
       curcpu->cpu_id,
       curcpu->cpu_lgrp,
@@ -92,11 +98,11 @@ sched:::sleep
       "user-level PI lock" : curlwpsinfo->pr_stype == SOBJ_SHUTTLE ?
       "shuttle" : "unknown");
 
-  self->delta = timestamp - self->stamp;
+  self->delta = ( timestamp - baseline ) - self->stamp;
   self->stamp = timestamp - baseline;
 
   printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15s\n",
-      self->stamp, self->delta,
+      self->stamp / scale, self->delta / scale,
       tid, 
       curcpu->cpu_id,
       curcpu->cpu_lgrp,
@@ -104,4 +110,12 @@ sched:::sleep
       "SLEEPING ON", self->sobj
       );
 
+}
+
+END {
+  self->stamp = timestamp - baseline;
+  self->delta = timestamp - baseline;
+  printf("%-20d , %-20s, %-8s , %-8s , %-8s, %-8s , %-8s, %-25s, %-15s", 
+       self->stamp / scale, "" , "" , "" ,  ""  ,  ""  ,  "" ,  "END"  ,  ""    
+      );
 }
