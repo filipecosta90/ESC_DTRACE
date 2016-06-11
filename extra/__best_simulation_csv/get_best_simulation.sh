@@ -16,16 +16,17 @@ do
     extension="${filename##*_}"
     filename="${filename%_*}"
     rm -r $filename
-    mkdir $filename 
+    mkdir $filename
+    cd $filename
     filename1=$(basename "$filename")
     nthreads="${filename1##*_}"
     filename1="${filename1%_*}"
-    echo $nthreads
-    for (( thread = 1; $thread <= $nthreads ; thread++ ))
+    for (( threadid = 1; threadid <= $nthreads ; threadid++ ))
     do
-      gawk -F, '$2==$nthreads { print $2 }' $file 
-      echo "thread $thread"
+      echo "getting lines of thread num $threadid and saving in $threadid.csv"
+      gawk -v thread="$threadid" -F, 'NR == 1 {print $0} $3==thread { print $0 }' ../$file > $threadid".csv"
     done
+    cd ..
   done
   cd ..
 done
