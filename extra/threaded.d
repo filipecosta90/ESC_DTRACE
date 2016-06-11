@@ -31,6 +31,25 @@ sched:::on-cpu
       );
 }
 
+sched:::dequeue
+/pid == $targe && 
+args[2]->cpu_id != --1 && 
+cpu != args[2]->cpu_id &&
+(curlwpsinfo->pr_flag & PR_IDLE)/
+{
+  self->delta = (timestamp-baseline) - self->stamp;
+  self->stamp = timestamp - baseline;
+
+  printf("%-20d , %-20d, %-8d , %-8d , %-8d, %-8d , %-8d, %-25s, %-15d\n",
+      self->stamp / scale, self->delta / scale,
+      tid, 
+      curcpu->cpu_id,
+      curcpu->cpu_lgrp,
+      self->lastcpu, self->lastlgrp,
+      "THREAD STOLEN BY", args[2]->cpu_id
+      );
+}
+
 sched:::on-cpu
 /pid == $target && self->stamp && self->lastcpu\
       != curcpu->cpu_id/
