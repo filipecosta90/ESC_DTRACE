@@ -13,7 +13,8 @@
  top=30mm,
  }
 \usepackage{quotchap}
-
+\usepackage{pgfplotstable,filecontents}
+\pgfplotsset{compat=1.9}% supress warning
 \usepackage{graphicx}
 \usepackage{epstopdf}
 \DeclareGraphicsExtensions{.eps}
@@ -788,6 +789,7 @@ Este foi apenas um trabalho introdutório mas permitiu demostrar a capacidade de
 \newpage
 \appendix 
 \section{Uma análise à política de escalonamento de zonas paralelas em OpenMP recorrendo à ferramenta Dtrace}
+\subsection{Contextualização}
 Retomando o trabalho prático 2, e respectiva análise de paralelismo em ambiente de memória partilhada,  via zonas paralelas OpenMP será interessante, como extra, analisar a influência dos diversos tipos de escalonamento OpenMP: 
 \begin{itemize}
 \item {\textbf{static} -- a maioria dos compiladores dividem o trabalho dos loops em $\frac{N\ #iteracoes}{ p\ # threads}$ por default, sendo o número de iterações distribuído uniformemente por thread OpenMP.\par
@@ -807,17 +809,99 @@ A título ilustrativo, suponha que existem 1000 iterações a serem distribuída
 \item \textbf{guided} -- com escalonamento guided, novas porções de iterações dos ciclos serão atribuídas às threads conforme o trabalho for sendo concluído, sendo essas porções de iterações dependentes relativas ao número de iterações restantes.\par
 \end{itemize}
  
+ \subsection{Uma primeira análise ao caso de estudo}
+\label{primeiraanalise}
 Atente no seguinte excerto de código:
-  \lstinputlisting[language=C]{../extra/ex2_v2.cpp} %input de um ficheiro
+  \lstinputlisting[language=C,basicstyle=\scriptsize]{../extra/ex2_v2.cpp} %input de um ficheiro
 
 Que iremos executar para as 3 versões de escalonamento dinâmico especificadas anteriormente, por forma a recolhermos dados estatísticos que nos permitam concluir qual das 3 versões a melhor para o nosso kernel específico.\par
 Relativamente às estatísticas teremos interesse em ter conhecimento do momento de criação e término das threads OpenMP, tempos on e off CPU, respectivo número de CPU onde a thread está alocada, assim como as interrupções voluntárias e forçadas e seus tipos.\par 
 Assim, o ficheiro \textbf{threaded.d}, disponibilizado no contexto da disciplina, apresenta o seguinte formato:
 
-  \lstinputlisting[]{../extra/threaded.d} %input de um ficheiro
+  \lstinputlisting[language=C,basicstyle=\scriptsize]{../extra/threaded_original.d} %input de um ficheiro
+
+Foram ainda realizadas algumas alterações ao mesmo, por forma a facilitar o posterior tratamento da informação, sendo ainda adicionada mais uma probe \textbf{proc:::lwp-exit} por forma a podermos contabilizar o tempo da última operação da thread.\par 
+Assim, o ficheiro final utilizado na realização dos testes apresenta o seguinte formato:\par 
+   \lstinputlisting[language=C,basicstyle=\scriptsize]{../extra/threaded.d} %input de um ficheiro
   
-  Com base nos valores impressos pela execução do script dtrace poderemos tratar posterior os dados por forma a obtermos uma representação visual, à semelhança do realizado no trabalho prático 2.
+   \subsection{Relação entre o tipo de escalonamento OpenMP, número de Threads OpenMP, e tempo total para a solução, para uma gama de valores aleatórios do ciclo mais interior inalterada ([1:99]).}
+\label{tempos_exe3_gama_inalterada}
+  Com base nos valores impressos pela execução do script dtrace poderemos tratar posteriormente os dados por forma a obtermos uma representação visual, à semelhança do realizado no trabalho prático 2.\par 
+  Ora, sabendo que o número de Cores físicos de cada CPU é 8, sendo que a máquina em estudo é multiprocessador, totalizando 16 Cores físicos e 32 Cores em HyperThread, devemos realizar os testes que englobem números de threads OpenMP entre 1 e 64. Desta forma, iremos realizar testes para 7 números de threads OpenMP distintos para cada opção de escalonamento, sendo estes 1, 2, 4, 8, 16, 32 e 64 threads.\par 
+  Inicialmente iremos manter a gama de valores aleatórios do ciclo mais interno do código apresentado na seção \ref{primeiraanalise}. Desta forma garantimos que a distribuição de carga entre threads, qualquer que seja o tipo de escalonamento não irá ser muito distinta. Analisemos portanto essa opção.\par 
+  Foram realizadas 10 repetições para cada número de Thread OpenMP em teste, e para cada forma de escalonamento. Dessas 10 repetições foi escolhida a que registou um menor tempo total para a solução, produzindo a figura \ref{fig:heatmap_scheduling_openmp}, vulgo \textbf{heatmap}, que associa o número de Threads OpenMP, tipo de escalonamento e Tempo Total para a solução. Denote que cores mais aproximadas do verde escuro representam a melhor solução alcançada:
+     \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{PNG/heatmap_scheduling_openmp.png}
+        \caption{ Relação entre o tipo de escalonamento OpenMP, número de Threads OpenMP, e tempo total para a solução, para uma gama de valores aleatórios do ciclo mais interior inalterada ([1:99]). }
+    \label{fig:heatmap_scheduling_openmp}
+    \end{figure}
+    
+     \subsubsection{Análise gráfica para o "best-case-scenario" e  "worst-case-scenario" dos tempos totais obtidos no estudo da secção \ref{tempos_exe3_gama_inalterada}}
+ 
+  Voltemos novamente aos valores de tempos totais obtidos e apresentados graficamente na figura \ref{fig:heatmap_scheduling_openmp}. Analisemos portanto os dois outputs produzidos pela ferramenta Dtrace já devidamente ordenados pelo valor da coluna timestamp. Dessa análise resultaram as tabelas \ref{table:static_1_1st_table} e \ref{table:dynamic_4_1st_table}, que apresentaremos de seguida.
   
+   \subsubsection{Análise do output da ferramenta Dtrace para o "best-case-scenario" dos tempos totais obtidos no estudo da secção \ref{tempos_exe3_gama_inalterada}}
+        \input{static_1_1st_table.tex}
+   
+     \subsubsection{Análise do output da ferramenta Dtrace para o "worst-case-scenario" dos tempos totais obtidos no estudo da secção \ref{tempos_exe3_gama_inalterada}}
+     \input{dynamic_4_1st_table.tex}
+     
+     
+    
+       \subsubsection{Análise gráfica para o "best-case-scenario" dos tempos totais obtidos no estudo da secção \ref{tempos_exe3_gama_inalterada}}
+       
+         Ora, retomando o exemplo do trabalho prático 2, e da análise gráfica da criação e término de threads, será interessante compreender a influência de cada uma das \textbf{probes} adicionadas ao profiling no comportamento da melhor e pior versões da aplicação. \par
+        Desta forma, foram produzidas as figuras \ref{fig:worst_dynamic_4_threads} a \ref{fig:worst_dynamic_4_threads_again}, ilustrando o descrito anteriormente, permitindo ainda a comparação com a mesma escala de tempos as duas versões da aplicação.\par 
+        
+        
+        \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{PNG/best_static_1_thread.png}
+        \caption{ Análise gráfica para o "best-case-scenario" dos tempos totais obtidos no estudo da secção \ref{tempos_exe3_gama_inalterada}, para uma gama de valores aleatórios do ciclo mais interior inalterada ([1:99]). }
+    \label{fig:best_static_1_thread}
+    \end{figure}
+    
+       
+        \subsubsection{Análise gráfica para o "worst-case-scenario" dos tempos totais obtidos no estudo da secção \ref{tempos_exe3_gama_inalterada}}
+        
+       
+        
+           \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{PNG/worst_dynamic_4_threads.png}
+        \caption{ Análise gráfica para o "worst-case-scenario" dos tempos totais obtidos no estudo da secção \ref{tempos_exe3_gama_inalterada}, para uma gama de valores aleatórios do ciclo mais interior inalterada ([1:99]). }
+    \label{fig:worst_dynamic_4_threads}
+    \end{figure}
+    
+  \newpage
+  
+  
+     \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{PNG/best_static_1_thread_scaled.png}
+        \caption{ Análise gráfica para o "best-case-scenario" dos tempos totais obtidos no estudo da secção \ref{tempos_exe3_gama_inalterada}, para uma gama de valores aleatórios do ciclo mais interior inalterada ([1:99]), com a mesma escala de tempos presente para o "worst-case-scenario". }
+    \label{fig:best_static_1_thread_scaled}
+    \end{figure}
+    
+           \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{PNG/worst_dynamic_4_threads.png}
+        \caption{ Análise gráfica para o "worst-case-scenario" dos tempos totais obtidos no estudo da secção \ref{tempos_exe3_gama_inalterada}, para uma gama de valores aleatórios do ciclo mais interior inalterada ([1:99]). }
+    \label{fig:worst_dynamic_4_threads_again}
+    \end{figure}
+    
+    Tendo em conta a dimensão da LLCache da máquina de teste, e a respectiva dimensão do dataset em estudo, conseguimos garantir que durante a computação, não existem bootlenecks "memory related". Ora, pela análise das imagens anteriores compreendemos que o grande diferenciador entre ambas as versões é respectivamente o overhead adicional da zona paralela. Se por uma lado, para escalonamento estático temos um menor overhead, para o caso do escalonamento dinâmico, esse mesmo overhead é completamente limitante em termos de performance. \par 
+    Ora, esta análise depreende que os valores aleatórios do ciclo interno se encontram num intervalo de valores muito restrito, e é por essa mesma razão que o escalonamento estático não sofre de load imbalance quando comparado com outros tipos de escalonamento. \par Testemos agora a situação onde o intervalo de valores poderá estar compreendido entre [1 e  262144 ].
+    
+      \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{PNG/heatmap_scheduling_openmp_new.png}
+        \caption{ Relação entre o tipo de escalonamento OpenMP, número de Threads OpenMP, e tempo total para a solução, para uma gama de valores aleatórios do ciclo mais interior inalterada ([1:262144]). }
+    \label{fig:heatmap_scheduling_openmp}
+    \end{figure}
+    
+    
 \end{document}
 
 

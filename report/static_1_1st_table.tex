@@ -1,0 +1,41 @@
+% !TEX encoding = UTF-8 Unicode
+
+\begin{table}[H]
+\caption{Análise do output da ferramenta Dtrace para o "best-case-scenario" dos tempos totais obtidos no estudo da secção \ref{tempos_exe3_gama_inalterada} }
+\scriptsize
+\label{table:static_1_1st_table}
+\centering
+
+\begin{tabular}{ |  L{1.2cm}  |  L{1.2cm}  |  L{0.7cm}  |  L{1cm} |  L{1cm} |  L{1cm} |  L{1cm} |  >{\centering \tiny}m{3cm}  |  L{1.5cm} |  } 
+\hline
+Timestamp ($\mu$s)        & Delta ($\mu$s)           & TID       & Current CPU  & Current Group & Last CPU  & Last Group & Type                      & Description    \\ \hline
+\hline
+0              &              & 1         & 7         & 1        &           &          & BEGIN                     &                \\ \hline
+895            & 895          & 1         & 24        & 2        & 24        & 2        & CREATE                    &                \\ \hline
+906            & 11           & 1         & 24        & 2        & 24        & 2        & RESTART ON SAME CPU       &                \\ \hline
+940            & 33           & 1         & 24        & 2        & 24        & 2        & PREEMPTED                 &                \\ \hline
+977            & 36           & 1         & 24        & 2        & 24        & 2        & RESTART ON SAME CPU       &                \\ \hline
+1423           & 446          & 1         & 24        & 2        & 24        & 2        & PREEMPTED                 &                \\ \hline
+2253           & 829          & 1         & 24        & 2        & 24        & 2        & RESTART ON SAME CPU       &                \\ \hline
+2267           & 14           & 1         & 24        & 2        & 24        & 2        & PREEMPTED                 &                \\ \hline
+2295           & 27           & 1         & 24        & 2        & 24        & 2        & RESTART ON SAME CPU       &                \\ \hline
+2535           & 239          & 1         & 24        & 2        & 24        & 2        & PREEMPTED                 &                \\ \hline
+2560           & 24           & 1         & 24        & 2        & 24        & 2        & RESTART ON SAME CPU       &                \\ \hline
+2569           & 9            & 1         & 24        & 2        & 24        & 2        & PREEMPTED                 &                \\ \hline
+2604           & 35           & 1         & 24        & 2        & 24        & 2        & RESTART ON SAME CPU       &                \\ \hline
+32506          & 29901        & 1         & 24        & 2        & 24        & 2        & SLEEPING ON               & cond var       \\ \hline
+32524          & 18           & 1         & 24        & 2        & 24        & 2        & PREEMPTED                 &                \\ \hline
+34663          & 2138         & 1         & 24        & 2        & 24        & 2        & RESTART ON SAME CPU       &                \\ \hline
+34718          & 55           & 1         & 24        & 2        & 24        & 2        & SLEEPING ON               & cond var       \\ \hline
+34724          & 5            & 1         & 24        & 2        & 24        & 2        & PREEMPTED                 &                \\ \hline
+34888          & 164          & 1         & 24        & 2        & 24        & 2        & RESTART ON SAME CPU       &                \\ \hline
+34931          & 42           & 1         & 24        & 2        & 24        & 2        & SLEEPING ON               & shuttle        \\ \hline
+34936          & 4            & 1         & 24        & 2        & 24        & 2        & PREEMPTED                 &                \\ \hline
+34991          & 54           & 1         & 24        & 2        & 24        & 2        & RESTART ON SAME CPU       &                \\ \hline
+35001          & 10           & 1         & 24        & 2        & 24        & 2        & SLEEPING ON               & shuttle        \\ \hline
+35005          & 4            & 1         & 24        & 2        & 24        & 2        & PREEMPTED                 &                \\ \hline
+35031          & 25           & 1         & 24        & 2        & 24        & 2        & RESTART ON SAME CPU       &                \\ \hline
+35174          & 143          & 1         & 24        & 2        & 24        & 2        & EXIT                      &                \\ \hline
+35329          &              & 1         & 7         & 1        &           &          & END                       &                \\ \hline
+\end{tabular}
+\end{table}
