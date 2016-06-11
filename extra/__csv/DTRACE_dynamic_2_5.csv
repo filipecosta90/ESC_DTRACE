@@ -1,43 +1,49 @@
-        0:0         TID   1 CPU   6(1) created
-        0:0         TID   1 CPU   6(1) created
+TIMESTAMP (us)       , DELTA (us)          , TID      , CURR CPU , CURR GRP, LAST CPU , LAST GRP, TYPE                     , DESCRIPTION    
+0                    ,                     ,          ,          ,         ,          ,         , BEGIN                    ,                
+815                  , 815                 , 1        , 27       , 2       , 27       , 2       , CREATE                   ,                
+826                  , 10                  , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+860                  , 34                  , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+896                  , 35                  , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+1342                 , 446                 , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
 Threads: 2 Range: 99
-Time: 211935 usecs
-        0:0         TID   1 CPU   6(1) created
-        0:0         TID   1 CPU   6(1) created
-        9:0         TID   1 CPU   6(1) created
-        9:1465568814879 TID   1 CPU   6(1) restarted on the same CPU
-        9:1465568814879 TID   1 CPU   6(1) preempted
-        9:1465568814879 TID   1 CPU   6(1) restarted on the same CPU
-        9:1465568814879 TID   1 sleeping on 'cond var'
-        9:1465568814879 TID   1 CPU   6(1) preempted
-        9:1465568814879 TID   1 CPU   6(1) restarted on the same CPU
-      219:1465568815089 TID   1 sleeping on 'cond var'
-      219:1465568815089 TID   1 CPU   6(1) preempted
-      219:1465568815089 TID   1 CPU   6(1) restarted on the same CPU
-      219:1465568815089 TID   1 sleeping on 'cond var'
-      219:1465568815089 TID   1 CPU   6(1) preempted
-      230:1465568815100 TID   1 CPU   6(1) restarted on the same CPU
-      230:1465568815100 TID   1 sleeping on 'cond var'
-      230:1465568815100 TID   1 CPU   6(1) preempted
-      230:1465568815100 TID   1 CPU   6(1) restarted on the same CPU
-      230:1465568815100 TID   1 sleeping on 'shuttle'
-      230:1465568815100 TID   1 CPU   6(1) preempted
-      230:1465568815100 TID   1 CPU   6(1) restarted on the same CPU
-      230:1465568815100 TID   1 sleeping on 'shuttle'
-      230:1465568815100 TID   1 CPU   6(1) preempted
-      230:1465568815100 TID   1 CPU   6(1) restarted on the same CPU
-      230:1465568815100 TID   1 sleeping on 'cond var'
-      230:1465568815100 TID   1 CPU   6(1) preempted
-      230:1465568815100 TID   1 CPU   6(1) restarted on the same CPU
-        9:0         TID   2 CPU   8(2) created
-        9:1465568814879 TID   2 CPU   8(2) restarted on the same CPU
-        9:1465568814879 TID   2 sleeping on 'cond var'
-        9:1465568814879 TID   2 CPU   8(2) preempted
-        9:1465568814879 TID   2 CPU   8(2) restarted on the same CPU
-      219:1465568815089 TID   2 sleeping on 'cond var'
-      219:1465568815089 TID   2 CPU   8(2) preempted
-      219:1465568815089 TID   2 CPU   8(2) restarted on the same CPU
-      219:1465568815089 TID   2 sleeping on 'cond var'
-      219:1465568815089 TID   2 CPU   8(2) preempted
-      230:1465568815100 TID   2 CPU   8(2) restarted on the same CPU
-
+Time: 196297 usecs
+6107                 , 6107                , 2        , 19       , 1       , 19       , 1       , CREATE                   ,                
+6135                 , 27                  , 2        , 19       , 1       , 19       , 1       , RESTART ON SAME CPU      ,                
+6174                 , 39                  , 2        , 19       , 1       , 19       , 1       , SLEEPING ON              , cond var       
+6185                 , 10                  , 2        , 19       , 1       , 19       , 1       , PREEMPTED                ,                
+6219                 , 34                  , 2        , 19       , 1       , 19       , 1       , RESTART ON SAME CPU      ,                
+201949               , 195729              , 2        , 19       , 1       , 19       , 1       , SLEEPING ON              , cond var       
+201957               , 7                   , 2        , 19       , 1       , 19       , 1       , PREEMPTED                ,                
+201967               , 10                  , 2        , 19       , 1       , 19       , 1       , RESTART ON SAME CPU      ,                
+201976               , 8                   , 2        , 19       , 1       , 19       , 1       , SLEEPING ON              , cond var       
+201982               , 6                   , 2        , 19       , 1       , 19       , 1       , PREEMPTED                ,                
+204565               , 2583                , 2        , 19       , 1       , 19       , 1       , RESTART ON SAME CPU      ,                
+1991                 , 648                 , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+2005                 , 14                  , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+2044                 , 38                  , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+2293                 , 248                 , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+2336                 , 43                  , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+2347                 , 10                  , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+2370                 , 23                  , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+6066                 , 3695                , 1        , 27       , 2       , 27       , 2       , SLEEPING ON              , cond var       
+6078                 , 12                  , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+6175                 , 96                  , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+201936               , 195761              , 1        , 27       , 2       , 27       , 2       , SLEEPING ON              , cond var       
+201945               , 8                   , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+201954               , 9                   , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+202089               , 134                 , 1        , 27       , 2       , 27       , 2       , SLEEPING ON              , cond var       
+202096               , 7                   , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+204066               , 1969                , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+204122               , 55                  , 1        , 27       , 2       , 27       , 2       , SLEEPING ON              , cond var       
+204128               , 5                   , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+204257               , 129                 , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+204300               , 43                  , 1        , 27       , 2       , 27       , 2       , SLEEPING ON              , shuttle        
+204305               , 5                   , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+204359               , 53                  , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+204368               , 9                   , 1        , 27       , 2       , 27       , 2       , SLEEPING ON              , shuttle        
+204373               , 4                   , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+204391               , 18                  , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+204554               , 162                 , 1        , 27       , 2       , 27       , 2       , SLEEPING ON              , cond var       
+204561               , 7                   , 1        , 27       , 2       , 27       , 2       , PREEMPTED                ,                
+204624               , 63                  , 1        , 27       , 2       , 27       , 2       , RESTART ON SAME CPU      ,                
+204831               ,                     ,          ,          ,         ,          ,         , END                      ,                

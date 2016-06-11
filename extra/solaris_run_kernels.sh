@@ -1,5 +1,7 @@
 #!bin/bash
 
+rm __csv/*.csv
+
 for schedule in static dynamic guided
 do
   export OMP_SCHEDULE="$schedule"

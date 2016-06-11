@@ -2,7 +2,7 @@
 
 
 cd __csv
-
+rm *"_time.csv"
 for schedule in static dynamic guided
 do
   for nthreads in 1 2 4 8 16 32 64
