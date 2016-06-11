@@ -46,6 +46,7 @@ function h = tabularHeatMap(data, varargin)
     
     addOptional(p, 'TextLabels', defaultTextLabels, @islogical);
     addOptional(p, 'Colorbar', defaultColorbar, @islogical);
+    
     addOptional(p, 'Colormap', defaultColormap);
     
     parse(p,varargin{:});

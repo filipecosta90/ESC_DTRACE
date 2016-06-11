@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -r __times
+mkdir __times
 
 cd __csv
 rm *"_time.csv"
@@ -11,3 +13,5 @@ do
   done
 done
 
+
+mv *"_time.csv" ../__times
